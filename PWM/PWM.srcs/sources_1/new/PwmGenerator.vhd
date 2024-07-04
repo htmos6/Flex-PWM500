@@ -13,7 +13,7 @@ entity PwmGenerator is
 	port 
 	(
 		clk_i : in std_logic;
-		duty_cycle_i : in std_logic_vector(7 downto 0); -- Will hold numbers up to 100
+		duty_cycle_i : in std_logic_vector(6 downto 0); -- Will hold numbers up to 100
 		pwm_signal_o : out std_logic
 	);
 end entity;
@@ -21,7 +21,7 @@ end entity;
 
 architecture Behavioral of PwmGenerator is
 
-	constant c_timer_limit : integer := c_clk_frequency / c_pwm_frequency;
+	constant c_timer_limit : integer := c_clk_frequency / c_pwm_frequency; -- 1ms is the overall period for duty cycle period. For example: 40% will be on, %60 will be off. 
 	
 	signal high_time_limit : integer := 0;
 	signal counter : integer range 0 to c_timer_limit := 0;
@@ -29,25 +29,23 @@ architecture Behavioral of PwmGenerator is
 begin
 	-- Define high time limit as a combinational.
 	-- Whenever duty cycle changes, update high time limit.
-	high_time_limit <= (conv_integer(duty_cycle_i)/100) * (c_timer_limit);
+	high_time_limit <= conv_integer(duty_cycle_i) * (c_timer_limit/100);
 	
 	P_PWM : process (clk_i) begin
 
 		if (rising_edge(clk_i)) then 
 			
-			if (counter < high_time_limit) then
+			if (counter = c_timer_limit - 1) then 
+				counter <= 0;
+				pwm_signal_o <= '1';
+			elsif (counter < high_time_limit - 1) then
 				pwm_signal_o <= '1';
 				counter <= counter + 1;
-			else
+			else -- Greater than (high_time_limit - 1)
 				pwm_signal_o <= '0';
 				counter <= counter + 1;
 			end if;
-			
-			if (counter = c_timer_limit - 1) then 
-				pwm_signal_o <= '1';
-				counter <= 0;
-			end if;
-			
+		
 		end if;
 		
 	end process;
