@@ -67,3 +67,10 @@ uut: entity work.PwmGenerator
 ### Adjust Parameters:
 - Modify `c_clk_frequency` and `c_pwm_frequency` if needed.
 - Provide appropriate values for `duty_cycle_i` to control the PWM output.
+
+- **Timing of the PWM is adjusted precisely, starting at the 0th cycle.**
+
+![image](https://github.com/htmos6/PWM-Generator/assets/88316097/80666042-32de-4139-a6f5-67830c4a8976)
+
+![image](https://github.com/htmos6/PWM-Generator/assets/88316097/5f591043-e0fe-4687-9469-4705d23fd39c)
+
